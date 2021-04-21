@@ -28,8 +28,8 @@ public class BoardRepositoryTests {
             int idx = (int) (Math.random()*100) + 1;
             Member member = Member.builder().email("user"+idx+"@aaa.com").build();
             Board board = Board.builder()
-                    .title("Title..."+i)
-                    .content("content..."+i)
+                    .title("광고 신청합니다."+i)
+                    .content("강남 매장들의 키오스크에 광고 보여주고싶습니다."+i)
                     .writer(member)
                     .build();
             boardRepository.save(board);
@@ -53,5 +53,15 @@ public class BoardRepositoryTests {
         Pageable pageable = PageRequest.of(0,10, Sort.by("bno").descending());
         Page<Object[]> result = boardRepository.getBoardWithReplyCount(pageable);
         result.get().forEach(arr -> log.info(Arrays.toString(arr)));
+    }
+
+    @Test
+    public void testReadWithCount(){
+        Long bno = 99L;
+        Object result = boardRepository.getBoardByBno(bno);
+        log.info(result);
+
+        Object[] arr = (Object[]) result;
+        log.info(Arrays.toString(arr));
     }
 }

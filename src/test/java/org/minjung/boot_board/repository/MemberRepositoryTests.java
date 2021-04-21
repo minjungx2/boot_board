@@ -22,7 +22,7 @@ public class MemberRepositoryTests {
             Member member = Member.builder()
                     .email("user"+i+"@aaa.com")
                     .password("1234")
-                    .name("사용자"+i)
+                    .name("광고주"+i)
                     .build();
             memberRepository.save(member);
         });

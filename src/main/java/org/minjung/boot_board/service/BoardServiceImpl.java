@@ -2,6 +2,7 @@ package org.minjung.boot_board.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.minjung.boot_board.repository.ReplyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,6 +14,7 @@ import org.minjung.boot_board.entity.Board;
 import org.minjung.boot_board.entity.Member;
 import org.minjung.boot_board.repository.BoardRepository;
 
+import javax.transaction.Transactional;
 import java.util.function.Function;
 
 @Service
@@ -21,6 +23,7 @@ import java.util.function.Function;
 public class BoardServiceImpl implements BoardService{
 
     private final BoardRepository boardRepository;
+    private final ReplyRepository replyRepository;
 
     @Override
     public Long register(BoardDTO dto) {
@@ -37,11 +40,35 @@ public class BoardServiceImpl implements BoardService{
 
         Page<Object[]> result = boardRepository.getBoardWithReplyCount(pageable);
 
-        Function<Object[], BoardDTO> fn = (arr -> EntityToDTO(
+        Function<Object[], BoardDTO> fn = (arr -> entityToDTO(
                 (Board) arr[0],
                 (Member) arr[1],
                 (Long) arr[2])
         );
         return new PageResultDTO<>(result,fn);
+    }
+
+    @Override
+    public BoardDTO get(Long bno) {
+        Object result = boardRepository.getBoardByBno(bno);
+        Object[] arr = (Object[]) result;
+        return entityToDTO((Board) arr[0], (Member) arr[1], (Long) arr[2]);
+    }
+
+    @Transactional
+    @Override
+    public void removeWtihReplies(Long bno) {
+        replyRepository.deleteByBno(bno);
+        boardRepository.deleteById(bno);
+    }
+
+    @Override
+    public void modify(BoardDTO dto) {
+        Board board = boardRepository.getOne(dto.getBno());
+
+        board.changeTitle(dto.getTitle());
+        board.changeContent(dto.getContent());
+
+        boardRepository.save(board);
     }
 }
