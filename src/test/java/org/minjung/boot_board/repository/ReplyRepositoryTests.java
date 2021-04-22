@@ -1,5 +1,6 @@
 package org.minjung.boot_board.repository;
 
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,6 +10,7 @@ import org.minjung.boot_board.entity.Reply;
 import java.util.stream.IntStream;
 
 @SpringBootTest
+@Log4j2
 public class ReplyRepositoryTests {
 
     @Autowired
@@ -28,5 +30,11 @@ public class ReplyRepositoryTests {
 
             replyRepository.save(reply);
         });
+    }
+
+    @Test
+    public void testBoardReply(){
+        Long bno = 99L;
+        log.info(replyRepository.getBoardReply(bno));
     }
 }
